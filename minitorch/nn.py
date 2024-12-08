@@ -101,12 +101,12 @@ fast_max = FastOps.reduce(operators.max, -float("inf"))
 
 def argmax(input: Tensor, dim: int) -> Tensor:
     """Return a boolean tensor indicating where the maximum values occur along dimension.
-    
+
     Args:
     ----
         input: Input tensor to find argmax over
         dim: Dimension to reduce along
-        
+
     Returns:
     -------
         Boolean tensor with True at positions of maximum values along dimension
@@ -114,7 +114,7 @@ def argmax(input: Tensor, dim: int) -> Tensor:
     """
     # Get maximum values along dimension using Max function
     max_vals = fast_max(input, dim)
-    
+
     # Return boolean mask of where input equals the max values
     return max_vals == input
 
@@ -165,19 +165,19 @@ class Max(Function):
 
         # Create mask of where maximum values occurred
         mask = argmax(input_tensor, dim_val)
-        
+
         # Return the mask times the expanded gradient output
         return mask * grad_output, 0.0
 
 
 def max(input: Tensor, dim: int) -> Tensor:
     """Apply max reduction along the specified dimension.
-    
+
     Args:
     ----
         input: Input tensor
         dim: Dimension to reduce over
-        
+
     Returns:
     -------
         Tensor with maximum values along dimension
@@ -188,17 +188,17 @@ def max(input: Tensor, dim: int) -> Tensor:
 
 def softmax(input: Tensor, dim: int) -> Tensor:
     """Compute softmax along the specified dimension.
-    
+
     The softmax function is defined as:
     softmax(x_i) = exp(x_i - max(x)) / sum(exp(x_j - max(x)) for all j).
-    
+
     This normalizes the input values to a probability distribution that sums to 1.
 
     Args:
     ----
         input: Input tensor
         dim: Dimension to compute softmax over
-        
+
     Returns:
     -------
         Tensor with softmax applied along the specified dimension.
@@ -206,31 +206,44 @@ def softmax(input: Tensor, dim: int) -> Tensor:
     """
     # Get max values along dimension for numerical stability
     max_vals = max(input, dim)
-    
+
     # Subtract max values and compute exponentials
-    shifted = input - max_vals
-    exp_vals = shifted.exp()
-    
-    # Normalize by sum of exponentials
+    shifted_input = input - max_vals
+    exp_vals = shifted_input.exp()
+
+    # Compute sum of exponentials
     sum_exp = exp_vals.sum(dim)
+
+    # Normalize by sum of exponentials
     return exp_vals / sum_exp
 
 
 def logsoftmax(input: Tensor, dim: int) -> Tensor:
     """Compute the log of the softmax along the specified dimension.
-    
+
+    A special trick is used to compute the log of the softmax to avoid numerical instability
+    - Subtracting the maximum value in the input tensor
+    - Adding it back after log
+
     Args:
     ----
         input: Input tensor
         dim: Dimension to compute log softmax over
-        
+
     Returns:
     -------
         Tensor with logsoftmax applied along the specified dimension.
 
     """
-    # Compute softmax using the softmax function implemented above and then take the log
-    return softmax(input, dim).log()
+    # Get max values along dimension for numerical stability
+    max_vals = max(input, dim)
+
+    # Compute log-sum-exp using the trick of subtracting the max value and adding it back after log
+    shifted_input = input - max_vals
+    log_sum_exp = max_vals + (shifted_input.exp().sum(dim)).log()
+
+    # Subtract log_sum_exp and add back max_vals that we subtracted earlier
+    return input - log_sum_exp
 
 
 def maxpool2d(input: Tensor, kernel: Tuple[int, int]) -> Tensor:
@@ -268,13 +281,13 @@ def maxpool2d(input: Tensor, kernel: Tuple[int, int]) -> Tensor:
 
 def dropout(input: Tensor, p: float, ignore: bool = False) -> Tensor:
     """Randomly drop out elements of the input tensor with probability rate.
-    
+
     Args:
     ----
         input: Input tensor
         p: Dropout probability between 0 and 1
         ignore: Whether to ignore dropout
-        
+
     Returns:
     -------
         Output with random values dropped to 0
@@ -283,10 +296,10 @@ def dropout(input: Tensor, p: float, ignore: bool = False) -> Tensor:
     # If ignore is true or p is 0, return the input as is
     if ignore or p <= 0:
         return input
-    
+
     # If p is 1, return a tensor of zeros with the same shape as the input
     if p >= 1:
-        return input.zeros(input.shape)        
+        return input.zeros(input.shape)
 
     # Generate random mask and drop out elements which the corresponding mask is less than p
     mask = rand(input.shape) > p

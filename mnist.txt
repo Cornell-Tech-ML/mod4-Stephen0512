@@ -1,843 +1,3 @@
-# MiniTorch Module 4
-
-<img src="https://minitorch.github.io/minitorch.svg" width="50%">
-
-* Docs: https://minitorch.github.io/
-
-* Overview: https://minitorch.github.io/module4.html
-
-This module requires `fast_ops.py`, `cuda_ops.py`, `scalar.py`, `tensor_functions.py`, `tensor_data.py`, `tensor_ops.py`, `operators.py`, `module.py`, and `autodiff.py` from Module 3.
-
-
-Additionally you will need to install and download the MNist library.
-
-(On Mac, this may require installing the `wget` command)
-
-```
-pip install python-mnist
-mnist_get_data.sh
-```
-
-
-* Tests:
-
-```
-python run_tests.py
-```
-
-This assignment requires the following files from the previous assignments. You can get these by running
-
-```bash
-python sync_previous_module.py previous-module-dir current-module-dir
-```
-
-The files that will be synced are:
-
-        minitorch/tensor_data.py minitorch/tensor_functions.py minitorch/tensor_ops.py minitorch/operators.py minitorch/scalar.py minitorch/scalar_functions.py minitorch/module.py minitorch/autodiff.py minitorch/module.py project/run_manual.py project/run_scalar.py project/run_tensor.py minitorch/operators.py minitorch/module.py minitorch/autodiff.py minitorch/tensor.py minitorch/datasets.py minitorch/testing.py minitorch/optim.py minitorch/tensor_ops.py minitorch/fast_ops.py minitorch/cuda_ops.py project/parallel_check.py tests/test_tensor_general.py
-
-## Task 4.5 - Model Training Results for SST2 and MNIST
-
-### Sentiment Classification (SST2)
-
-#### Command Used to Run the Model:
-
-```bash
-python project/run_sentiment.py
-```
-
-#### Model Training Configuration
-
-- Number of training points: 450
-- Number of validation points: 100
-- Learning rate: 0.01
-- Number of epochs: 250
-
-#### Model Training Results
-
-Multiple runs were performed to obtain the best validation accuracy. The final model achieved >70% best validation accuracy on the sentiment classification task.
-
-The full training log can be found in [sentiment.txt](sentiment.txt).
-
-The training log is also shown below, showing the model reaching 74% best validation accuracy:
-
-```console
-missing pre-trained embedding for 55 unknown words
-Epoch 1, loss 31.260272083233616, train accuracy: 50.22%
-Validation accuracy: 53.00%
-Best Valid accuracy: 53.00%
-Epoch 2, loss 31.141355042186966, train accuracy: 53.56%
-Validation accuracy: 56.00%
-Best Valid accuracy: 56.00%
-Epoch 3, loss 30.996924822823427, train accuracy: 51.56%
-Validation accuracy: 57.00%
-Best Valid accuracy: 57.00%
-Epoch 4, loss 30.818620272651668, train accuracy: 54.67%
-Validation accuracy: 54.00%
-Best Valid accuracy: 57.00%
-Epoch 5, loss 30.538730822041565, train accuracy: 57.78%
-Validation accuracy: 51.00%
-Best Valid accuracy: 57.00%
-Epoch 6, loss 30.243968645056423, train accuracy: 61.56%
-Validation accuracy: 55.00%
-Best Valid accuracy: 57.00%
-Epoch 7, loss 30.051509404984976, train accuracy: 62.22%
-Validation accuracy: 60.00%
-Best Valid accuracy: 60.00%
-Epoch 8, loss 29.57523007125308, train accuracy: 66.22%
-Validation accuracy: 59.00%
-Best Valid accuracy: 60.00%
-Epoch 9, loss 29.234142303381752, train accuracy: 64.67%
-Validation accuracy: 53.00%
-Best Valid accuracy: 60.00%
-Epoch 10, loss 29.146624820452733, train accuracy: 64.44%
-Validation accuracy: 68.00%
-Best Valid accuracy: 68.00%
-Epoch 11, loss 28.690935637596528, train accuracy: 65.78%
-Validation accuracy: 61.00%
-Best Valid accuracy: 68.00%
-Epoch 12, loss 28.140448152894265, train accuracy: 69.11%
-Validation accuracy: 62.00%
-Best Valid accuracy: 68.00%
-Epoch 13, loss 27.66216760106527, train accuracy: 70.89%
-Validation accuracy: 61.00%
-Best Valid accuracy: 68.00%
-Epoch 14, loss 27.035888978772142, train accuracy: 71.56%
-Validation accuracy: 69.00%
-Best Valid accuracy: 69.00%
-Epoch 15, loss 26.77856414084222, train accuracy: 71.56%
-Validation accuracy: 71.00%
-Best Valid accuracy: 71.00%
-Epoch 16, loss 26.008831703369705, train accuracy: 69.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 71.00%
-Epoch 17, loss 25.29807557819976, train accuracy: 73.78%
-Validation accuracy: 70.00%
-Best Valid accuracy: 71.00%
-Epoch 18, loss 24.59494267972806, train accuracy: 73.78%
-Validation accuracy: 69.00%
-Best Valid accuracy: 71.00%
-Epoch 19, loss 23.66630055745482, train accuracy: 75.11%
-Validation accuracy: 62.00%
-Best Valid accuracy: 71.00%
-Epoch 20, loss 23.632015711113855, train accuracy: 74.22%
-Validation accuracy: 70.00%
-Best Valid accuracy: 71.00%
-Epoch 21, loss 23.22289516521898, train accuracy: 74.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 72.00%
-Epoch 22, loss 22.287073935500537, train accuracy: 76.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 72.00%
-Epoch 23, loss 21.940514683154845, train accuracy: 76.22%
-Validation accuracy: 71.00%
-Best Valid accuracy: 72.00%
-Epoch 24, loss 20.816763545046445, train accuracy: 76.89%
-Validation accuracy: 71.00%
-Best Valid accuracy: 72.00%
-Epoch 25, loss 20.71151689891024, train accuracy: 79.78%
-Validation accuracy: 73.00%
-Best Valid accuracy: 73.00%
-Epoch 26, loss 20.180281221853548, train accuracy: 77.11%
-Validation accuracy: 73.00%
-Best Valid accuracy: 73.00%
-Epoch 27, loss 19.52546281738076, train accuracy: 81.56%
-Validation accuracy: 74.00%
-Best Valid accuracy: 74.00%
-Epoch 28, loss 19.110849260752115, train accuracy: 82.22%
-Validation accuracy: 67.00%
-Best Valid accuracy: 74.00%
-Epoch 29, loss 18.042472008117645, train accuracy: 82.67%
-Validation accuracy: 74.00%
-Best Valid accuracy: 74.00%
-Epoch 30, loss 18.508294758702313, train accuracy: 81.11%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 31, loss 17.056480422438902, train accuracy: 84.00%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 32, loss 16.92432750474255, train accuracy: 83.56%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 33, loss 16.768686354671054, train accuracy: 82.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 34, loss 16.520772804864567, train accuracy: 80.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 35, loss 15.733854249414579, train accuracy: 83.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 36, loss 15.513621468784281, train accuracy: 81.56%
-Validation accuracy: 74.00%
-Best Valid accuracy: 74.00%
-Epoch 37, loss 15.41843508358301, train accuracy: 85.11%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 38, loss 15.122401918158383, train accuracy: 83.78%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 39, loss 14.242036789879823, train accuracy: 82.67%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 40, loss 13.69415142817124, train accuracy: 82.67%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 41, loss 13.574763781075509, train accuracy: 85.11%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 42, loss 13.369252084830476, train accuracy: 86.22%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 43, loss 13.603602478488675, train accuracy: 86.22%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 44, loss 12.858379004465815, train accuracy: 85.33%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 45, loss 12.222113355996854, train accuracy: 86.89%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 46, loss 14.047285360955838, train accuracy: 84.67%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 47, loss 12.958137707623976, train accuracy: 84.22%
-Validation accuracy: 74.00%
-Best Valid accuracy: 74.00%
-Epoch 48, loss 12.450736173049414, train accuracy: 85.78%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 49, loss 12.293601450806733, train accuracy: 86.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 50, loss 11.412413641075611, train accuracy: 87.56%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 51, loss 11.710639390768893, train accuracy: 86.67%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 52, loss 12.114491176500922, train accuracy: 84.00%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 53, loss 10.958041951754824, train accuracy: 88.44%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 54, loss 12.87366534993347, train accuracy: 83.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 55, loss 11.505811303532688, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 56, loss 10.976641106877882, train accuracy: 86.22%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 57, loss 11.280839636688874, train accuracy: 84.00%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 58, loss 11.027466305217546, train accuracy: 85.33%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 59, loss 10.789402368259932, train accuracy: 86.00%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 60, loss 10.493310053583034, train accuracy: 87.56%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 61, loss 10.215700307295325, train accuracy: 87.78%
-Validation accuracy: 67.00%
-Best Valid accuracy: 74.00%
-Epoch 62, loss 10.17581679407523, train accuracy: 86.89%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 63, loss 10.84954019597606, train accuracy: 86.44%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 64, loss 10.668928623805096, train accuracy: 88.00%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 65, loss 9.758782038475102, train accuracy: 89.78%
-Validation accuracy: 67.00%
-Best Valid accuracy: 74.00%
-Epoch 66, loss 10.205755670761151, train accuracy: 87.11%
-Validation accuracy: 67.00%
-Best Valid accuracy: 74.00%
-Epoch 67, loss 9.69254721506284, train accuracy: 87.11%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 68, loss 10.289834674048961, train accuracy: 86.89%
-Validation accuracy: 67.00%
-Best Valid accuracy: 74.00%
-Epoch 69, loss 10.300102400707596, train accuracy: 86.67%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 70, loss 9.815512637645677, train accuracy: 86.44%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 71, loss 10.38557759005452, train accuracy: 82.22%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 72, loss 8.344340118368153, train accuracy: 88.89%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 73, loss 9.750188518752203, train accuracy: 86.67%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 74, loss 9.200202440172589, train accuracy: 88.44%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 75, loss 10.765560704416144, train accuracy: 85.78%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 76, loss 9.541360362577882, train accuracy: 88.00%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 77, loss 9.59559695622629, train accuracy: 86.89%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 78, loss 10.34892852800455, train accuracy: 84.89%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 79, loss 10.207710850275967, train accuracy: 87.11%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 80, loss 8.570043480012119, train accuracy: 87.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 81, loss 9.314508943950809, train accuracy: 86.22%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 82, loss 9.770214963682895, train accuracy: 86.44%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 83, loss 8.708220738068139, train accuracy: 88.67%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 84, loss 9.438734268745524, train accuracy: 87.56%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 85, loss 9.855270513925365, train accuracy: 84.89%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 86, loss 9.677412090725705, train accuracy: 87.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 87, loss 8.328774893965843, train accuracy: 88.44%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 88, loss 9.098674162334781, train accuracy: 87.33%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 89, loss 9.663497484519594, train accuracy: 88.00%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 90, loss 8.741440560515631, train accuracy: 87.78%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 91, loss 8.20563312564053, train accuracy: 89.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 92, loss 8.540681493740019, train accuracy: 88.89%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 93, loss 9.478786696575726, train accuracy: 87.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 94, loss 9.542630243520371, train accuracy: 85.56%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 95, loss 8.749883083240519, train accuracy: 88.00%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 96, loss 9.875875736833658, train accuracy: 88.00%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 97, loss 8.793469422322305, train accuracy: 87.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 98, loss 8.175135480860844, train accuracy: 85.78%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 99, loss 9.48392419905917, train accuracy: 85.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 100, loss 8.51964016061218, train accuracy: 87.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 101, loss 8.726802565915088, train accuracy: 86.44%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 102, loss 8.822678689735586, train accuracy: 87.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 103, loss 10.45888030183302, train accuracy: 84.44%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 104, loss 9.055250600318924, train accuracy: 86.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 105, loss 8.427523892837101, train accuracy: 89.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 106, loss 9.135659166267633, train accuracy: 86.44%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 107, loss 8.14163757149296, train accuracy: 86.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 108, loss 9.355110122369332, train accuracy: 84.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 109, loss 9.169598764805823, train accuracy: 88.44%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 110, loss 8.644700592358987, train accuracy: 87.11%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 111, loss 8.073599076178864, train accuracy: 87.56%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 112, loss 8.360794259159038, train accuracy: 87.78%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 113, loss 8.727221355357816, train accuracy: 86.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 114, loss 8.995593567256138, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 115, loss 7.552529969469354, train accuracy: 89.56%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 116, loss 8.7228487764355, train accuracy: 90.22%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 117, loss 8.511129146413083, train accuracy: 87.11%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 118, loss 9.42183765902901, train accuracy: 85.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 119, loss 8.185031343694291, train accuracy: 86.22%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 120, loss 7.610443475287271, train accuracy: 88.89%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 121, loss 7.7071353638631175, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 122, loss 9.103164724382935, train accuracy: 86.22%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 123, loss 7.871124103224756, train accuracy: 89.56%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 124, loss 9.731187231877387, train accuracy: 82.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 125, loss 9.138884950425327, train accuracy: 86.89%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 126, loss 7.810205095601123, train accuracy: 88.44%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 127, loss 8.96379192338935, train accuracy: 86.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 128, loss 9.464393261909438, train accuracy: 84.67%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 129, loss 7.67607577983136, train accuracy: 86.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 130, loss 8.291391400741022, train accuracy: 88.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 131, loss 9.392703576020423, train accuracy: 86.22%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 132, loss 7.832555497724109, train accuracy: 86.67%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 133, loss 8.974784591701058, train accuracy: 85.56%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 134, loss 8.11959911823327, train accuracy: 87.56%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 135, loss 9.719542194026827, train accuracy: 84.67%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 136, loss 9.054635167293025, train accuracy: 85.56%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 137, loss 8.472046570878945, train accuracy: 86.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 138, loss 7.858387057316264, train accuracy: 88.22%
-Validation accuracy: 68.00%
-Best Valid accuracy: 74.00%
-Epoch 139, loss 8.882781396123555, train accuracy: 84.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 140, loss 8.22823945363362, train accuracy: 88.44%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 141, loss 8.097391874824497, train accuracy: 87.11%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 142, loss 7.856633070332042, train accuracy: 85.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 143, loss 8.722464702500853, train accuracy: 86.22%
-Validation accuracy: 69.00%
-Best Valid accuracy: 74.00%
-Epoch 144, loss 8.180992003637005, train accuracy: 87.56%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 145, loss 7.336613305014945, train accuracy: 90.00%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 146, loss 7.934906908733712, train accuracy: 88.89%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 147, loss 7.602399528117027, train accuracy: 90.44%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 148, loss 8.198396520066746, train accuracy: 85.11%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 149, loss 8.122195508745433, train accuracy: 88.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 150, loss 8.827987655757612, train accuracy: 86.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 151, loss 9.15081992619229, train accuracy: 86.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 152, loss 7.939498121943015, train accuracy: 88.89%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 153, loss 8.66827848135066, train accuracy: 86.44%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 154, loss 8.882214747680484, train accuracy: 86.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 155, loss 8.33130732382591, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 156, loss 7.025658165527218, train accuracy: 89.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 157, loss 8.060968559324339, train accuracy: 85.33%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 158, loss 7.897494597606201, train accuracy: 87.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 159, loss 8.027298041590218, train accuracy: 88.44%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 160, loss 7.495879147795516, train accuracy: 87.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 161, loss 7.557897291264424, train accuracy: 88.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 162, loss 7.600635097086528, train accuracy: 87.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 163, loss 7.563042704959456, train accuracy: 88.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 164, loss 8.689816028502818, train accuracy: 86.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 165, loss 8.346470592176908, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 166, loss 8.000992044320595, train accuracy: 89.78%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 167, loss 8.714734921745874, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 168, loss 7.431504034423948, train accuracy: 87.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 169, loss 8.77023806377037, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 170, loss 8.104120286551337, train accuracy: 88.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 171, loss 8.588603111231873, train accuracy: 87.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 172, loss 9.805372216366553, train accuracy: 83.78%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 173, loss 7.49998220026758, train accuracy: 87.78%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 174, loss 9.387536400482222, train accuracy: 86.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 175, loss 6.8669440505615, train accuracy: 87.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 176, loss 8.971625895704822, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 177, loss 8.098039437683942, train accuracy: 86.67%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 178, loss 8.175562818508912, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 179, loss 9.298607657685972, train accuracy: 85.33%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 180, loss 8.07502352099695, train accuracy: 87.33%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 181, loss 7.763400026514633, train accuracy: 86.67%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 182, loss 8.385987128225137, train accuracy: 85.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 183, loss 7.901336053729714, train accuracy: 88.44%
-Validation accuracy: 70.00%
-Best Valid accuracy: 74.00%
-Epoch 184, loss 7.721920679179595, train accuracy: 89.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 185, loss 8.042155810762402, train accuracy: 85.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 186, loss 8.525726616195357, train accuracy: 84.89%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 187, loss 9.139101766956067, train accuracy: 85.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 188, loss 7.930946458968892, train accuracy: 88.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 189, loss 8.186377647481025, train accuracy: 87.33%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 190, loss 7.898124509174589, train accuracy: 85.78%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 191, loss 8.176344390245367, train accuracy: 87.11%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 192, loss 8.570434162572441, train accuracy: 85.56%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 193, loss 7.892068702784787, train accuracy: 85.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 194, loss 8.033770356982771, train accuracy: 87.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 195, loss 8.532373473368045, train accuracy: 87.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 196, loss 7.78498365956711, train accuracy: 88.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 197, loss 8.457873004728054, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 198, loss 8.254233206960707, train accuracy: 87.11%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 199, loss 8.346453240348655, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 200, loss 9.099753136068275, train accuracy: 86.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 201, loss 8.354264907634935, train accuracy: 87.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 202, loss 8.157925669678452, train accuracy: 86.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 203, loss 8.768641499308552, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 204, loss 7.5687956841597295, train accuracy: 88.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 205, loss 6.8692574756157425, train accuracy: 89.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 206, loss 7.931665617219712, train accuracy: 88.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 207, loss 8.16388653620624, train accuracy: 86.22%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 208, loss 8.317989638630051, train accuracy: 88.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 209, loss 8.62002006191861, train accuracy: 86.89%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 210, loss 9.35249831388172, train accuracy: 84.67%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 211, loss 8.12352580136892, train accuracy: 87.33%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 212, loss 8.432869589859166, train accuracy: 88.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 213, loss 7.773309191846218, train accuracy: 86.00%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 214, loss 8.319266108287831, train accuracy: 88.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 215, loss 8.95163057850833, train accuracy: 86.67%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 216, loss 6.982791630170979, train accuracy: 88.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 217, loss 8.574524368050858, train accuracy: 86.89%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 218, loss 7.101543892644403, train accuracy: 88.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 219, loss 7.423912468047777, train accuracy: 88.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 220, loss 8.729606056143039, train accuracy: 86.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 221, loss 7.967854345337939, train accuracy: 88.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 222, loss 7.730903763915215, train accuracy: 86.89%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 223, loss 7.793544923649549, train accuracy: 89.78%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 224, loss 8.85917673433996, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 225, loss 7.810827658408127, train accuracy: 86.89%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 226, loss 7.46623857938203, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 227, loss 7.551992837973532, train accuracy: 89.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 228, loss 7.1908403544697235, train accuracy: 88.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 229, loss 7.934217016312446, train accuracy: 87.33%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 230, loss 8.216852229507339, train accuracy: 86.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 231, loss 8.071970602435389, train accuracy: 86.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 232, loss 8.665041320131305, train accuracy: 84.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 233, loss 8.043901057615107, train accuracy: 87.33%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 234, loss 9.570874842324228, train accuracy: 85.11%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 235, loss 8.21203157737752, train accuracy: 87.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 236, loss 8.213495289584422, train accuracy: 86.89%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 237, loss 7.8276749773243814, train accuracy: 87.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 238, loss 8.458029421494636, train accuracy: 83.78%
-Validation accuracy: 73.00%
-Best Valid accuracy: 74.00%
-Epoch 239, loss 8.070483736664238, train accuracy: 88.00%
-Validation accuracy: 71.00%
-Best Valid accuracy: 74.00%
-Epoch 240, loss 8.257698810323848, train accuracy: 85.11%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 241, loss 8.819788785964, train accuracy: 86.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 242, loss 7.535919735475292, train accuracy: 88.00%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 243, loss 9.15887997655674, train accuracy: 85.56%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 244, loss 7.924855986993845, train accuracy: 88.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 245, loss 6.885462426916719, train accuracy: 89.11%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 246, loss 8.201071757933986, train accuracy: 88.22%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 247, loss 8.581961531388504, train accuracy: 86.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 248, loss 8.724963488021526, train accuracy: 84.44%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 249, loss 8.539017286459336, train accuracy: 85.78%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-Epoch 250, loss 8.466766387128647, train accuracy: 87.11%
-Validation accuracy: 72.00%
-Best Valid accuracy: 74.00%
-```
-
-### Digit Classification (MNIST)
-
-#### Command Used to Run the Model:
-
-```bash
-python project/run_mnist_multiclass.py
-```
-
-#### Model Training Configuration
-
-- Number of training points: 5000
-- Number of validation points: 500
-- Learning rate: 0.01
-- Number of epochs: 25
-
-#### Model Training Results
-
-Multiple runs were performed to obtain the best validation accuracy. The final model achieved majority 16/16 classification accuracy on the MNISTvalidation set.
-
-The full training log can be found in [mnist.txt](mnist.txt).
-
-The training log is also shown below, showing the model reaching majority 16/16 validation classification accuracy when the epoch is 16 (There is not need to train any longer as continue training may result in overfitting and early termination is appropriate in this case):
-
-```console
 Epoch 1 loss 2.3077798541026606 valid acc 2/16
 Epoch 1 loss 11.465867158181752 valid acc 2/16
 Epoch 1 loss 11.461627497727573 valid acc 2/16
@@ -1846,4 +1006,570 @@ Epoch 16 loss 0.057784654869467156 valid acc 16/16
 Epoch 16 loss 0.05501716945697421 valid acc 16/16
 Epoch 16 loss 0.17208645713847864 valid acc 16/16
 Epoch 16 loss 0.2438606312667841 valid acc 16/16
-```
+Epoch 17 loss 0.00041071835863237816 valid acc 16/16
+Epoch 17 loss 0.2853808161910151 valid acc 16/16
+Epoch 17 loss 0.21794617132703403 valid acc 15/16
+Epoch 17 loss 0.15502119052976077 valid acc 15/16
+Epoch 17 loss 0.0006005811447284959 valid acc 15/16
+Epoch 17 loss 0.5822821157547861 valid acc 16/16
+Epoch 17 loss 0.29074883427268583 valid acc 15/16
+Epoch 17 loss 0.13409591096070533 valid acc 16/16
+Epoch 17 loss 0.18562873560403248 valid acc 16/16
+Epoch 17 loss 0.28519632802148803 valid acc 15/16
+Epoch 17 loss 0.28637315326098095 valid acc 16/16
+Epoch 17 loss 0.8022745640836639 valid acc 16/16
+Epoch 17 loss 0.5889741559477057 valid acc 16/16
+Epoch 17 loss 0.6479218427532126 valid acc 16/16
+Epoch 17 loss 0.10424736778717808 valid acc 16/16
+Epoch 17 loss 0.07267165140935333 valid acc 16/16
+Epoch 17 loss 0.32606572734498773 valid acc 16/16
+Epoch 17 loss 0.44968705825193855 valid acc 16/16
+Epoch 17 loss 0.23949506996026854 valid acc 16/16
+Epoch 17 loss 0.04878301950555275 valid acc 16/16
+Epoch 17 loss 0.770846151504857 valid acc 15/16
+Epoch 17 loss 0.5257574232694815 valid acc 16/16
+Epoch 17 loss 0.03116806070784589 valid acc 16/16
+Epoch 17 loss 0.20454279087298408 valid acc 16/16
+Epoch 17 loss 1.1742442832001834 valid acc 16/16
+Epoch 17 loss 0.8039978960843863 valid acc 16/16
+Epoch 17 loss 0.707899906971244 valid acc 16/16
+Epoch 17 loss 0.5083390966280843 valid acc 16/16
+Epoch 17 loss 0.5981218020208962 valid acc 16/16
+Epoch 17 loss 0.049336038574235574 valid acc 16/16
+Epoch 17 loss 0.2411710726210991 valid acc 16/16
+Epoch 17 loss 0.2983630588074779 valid acc 16/16
+Epoch 17 loss 0.32077721477564075 valid acc 16/16
+Epoch 17 loss 0.05971650376210419 valid acc 16/16
+Epoch 17 loss 0.23831335280355098 valid acc 16/16
+Epoch 17 loss 0.11806365773126037 valid acc 16/16
+Epoch 17 loss 0.3227499105219714 valid acc 16/16
+Epoch 17 loss 0.25018823645115273 valid acc 16/16
+Epoch 17 loss 0.20594784973997993 valid acc 16/16
+Epoch 17 loss 0.1682210110053633 valid acc 16/16
+Epoch 17 loss 0.5306902585496038 valid acc 16/16
+Epoch 17 loss 0.32398352514462664 valid acc 16/16
+Epoch 17 loss 0.19130379133049935 valid acc 16/16
+Epoch 17 loss 0.05281744307046482 valid acc 16/16
+Epoch 17 loss 0.25776466457069175 valid acc 16/16
+Epoch 17 loss 0.03692632983912575 valid acc 16/16
+Epoch 17 loss 0.03435455513008301 valid acc 16/16
+Epoch 17 loss 0.1280337159439841 valid acc 16/16
+Epoch 17 loss 0.24821552600821206 valid acc 16/16
+Epoch 17 loss 0.05624348306074389 valid acc 16/16
+Epoch 17 loss 0.01986796720970796 valid acc 16/16
+Epoch 17 loss 0.11582420118114306 valid acc 16/16
+Epoch 17 loss 0.08559852686977182 valid acc 16/16
+Epoch 17 loss 0.03505169567971739 valid acc 16/16
+Epoch 17 loss 0.10867526609984668 valid acc 16/16
+Epoch 17 loss 0.217211785473868 valid acc 16/16
+Epoch 17 loss 0.21487788152841966 valid acc 16/16
+Epoch 17 loss 0.25094338478970246 valid acc 16/16
+Epoch 17 loss 0.38221785331880936 valid acc 16/16
+Epoch 17 loss 0.7572387762371414 valid acc 15/16
+Epoch 17 loss 0.4667336933251638 valid acc 16/16
+Epoch 17 loss 0.4885131084869833 valid acc 15/16
+Epoch 17 loss 0.5510529941687513 valid acc 16/16
+Epoch 18 loss 2.8031741551637346e-05 valid acc 16/16
+Epoch 18 loss 0.5481866162124849 valid acc 16/16
+Epoch 18 loss 0.08849470972098811 valid acc 16/16
+Epoch 18 loss 0.05673792524649107 valid acc 16/16
+Epoch 18 loss 0.014705330213878542 valid acc 16/16
+Epoch 18 loss 0.02608446870694847 valid acc 16/16
+Epoch 18 loss 0.25807893835642126 valid acc 15/16
+Epoch 18 loss 0.33782811057250767 valid acc 16/16
+Epoch 18 loss 0.20279000122936053 valid acc 15/16
+Epoch 18 loss 0.24611216633781924 valid acc 16/16
+Epoch 18 loss 0.4875999664610503 valid acc 15/16
+Epoch 18 loss 1.1593725453103243 valid acc 16/16
+Epoch 18 loss 0.28841992520439946 valid acc 16/16
+Epoch 18 loss 2.387519681464024 valid acc 15/16
+Epoch 18 loss 0.9794510295651835 valid acc 16/16
+Epoch 18 loss 0.15921064032425314 valid acc 16/16
+Epoch 18 loss 0.4263259122352415 valid acc 16/16
+Epoch 18 loss 0.1798663063306335 valid acc 16/16
+Epoch 18 loss 0.4727384529611859 valid acc 16/16
+Epoch 18 loss 0.1095624396149838 valid acc 16/16
+Epoch 18 loss 0.44653777485469137 valid acc 16/16
+Epoch 18 loss 0.05302746339050679 valid acc 16/16
+Epoch 18 loss 0.015947561576500124 valid acc 16/16
+Epoch 18 loss 0.01901479110164389 valid acc 16/16
+Epoch 18 loss 0.05311930963782496 valid acc 16/16
+Epoch 18 loss 0.11773430028885884 valid acc 16/16
+Epoch 18 loss 0.1918198301460765 valid acc 16/16
+Epoch 18 loss 0.2732473962141676 valid acc 16/16
+Epoch 18 loss 0.3438289837612988 valid acc 16/16
+Epoch 18 loss 0.08043503083454223 valid acc 16/16
+Epoch 18 loss 0.4372219226107822 valid acc 16/16
+Epoch 18 loss 0.5192897953594229 valid acc 16/16
+Epoch 18 loss 0.10554375868831112 valid acc 16/16
+Epoch 18 loss 0.07691780996193232 valid acc 16/16
+Epoch 18 loss 0.12161856755922923 valid acc 16/16
+Epoch 18 loss 0.2261070446199897 valid acc 16/16
+Epoch 18 loss 0.501042410387615 valid acc 16/16
+Epoch 18 loss 0.8636248599902865 valid acc 15/16
+Epoch 18 loss 0.5271195046305381 valid acc 16/16
+Epoch 18 loss 0.08495997992614446 valid acc 16/16
+Epoch 18 loss 0.022681628410601562 valid acc 16/16
+Epoch 18 loss 0.1874365795108816 valid acc 16/16
+Epoch 18 loss 0.61950716232296 valid acc 16/16
+Epoch 18 loss 0.18747374372799674 valid acc 16/16
+Epoch 18 loss 0.6285179169276329 valid acc 16/16
+Epoch 18 loss 0.03605895687457161 valid acc 16/16
+Epoch 18 loss 0.12053486961325832 valid acc 16/16
+Epoch 18 loss 0.4228932725080554 valid acc 16/16
+Epoch 18 loss 0.19959556097597203 valid acc 16/16
+Epoch 18 loss 0.11537217807064781 valid acc 16/16
+Epoch 18 loss 0.07068976841556895 valid acc 16/16
+Epoch 18 loss 0.30502228306457224 valid acc 16/16
+Epoch 18 loss 0.5612929390456484 valid acc 16/16
+Epoch 18 loss 0.02103667177435864 valid acc 16/16
+Epoch 18 loss 0.6048531421851285 valid acc 16/16
+Epoch 18 loss 0.21022321130434202 valid acc 16/16
+Epoch 18 loss 0.2280293626674716 valid acc 16/16
+Epoch 18 loss 0.18392178275026283 valid acc 15/16
+Epoch 18 loss 0.3986339890345383 valid acc 15/16
+Epoch 18 loss 0.34685166963811276 valid acc 16/16
+Epoch 18 loss 0.22804626331282718 valid acc 16/16
+Epoch 18 loss 0.10373337349386186 valid acc 16/16
+Epoch 18 loss 0.21194396879711636 valid acc 16/16
+Epoch 19 loss 0.4227921655402079 valid acc 16/16
+Epoch 19 loss 0.19280820159520365 valid acc 16/16
+Epoch 19 loss 0.21082120933922077 valid acc 16/16
+Epoch 19 loss 0.08608519103214085 valid acc 16/16
+Epoch 19 loss 0.033453539966815216 valid acc 16/16
+Epoch 19 loss 0.09624531788871038 valid acc 16/16
+Epoch 19 loss 0.24540355034710104 valid acc 16/16
+Epoch 19 loss 0.43458375711387737 valid acc 16/16
+Epoch 19 loss 0.2388963272167151 valid acc 16/16
+Epoch 19 loss 0.16973051172347303 valid acc 16/16
+Epoch 19 loss 0.31800986093283956 valid acc 16/16
+Epoch 19 loss 0.4488410981204553 valid acc 16/16
+Epoch 19 loss 0.5979200838720666 valid acc 16/16
+Epoch 19 loss 0.17823325689831465 valid acc 16/16
+Epoch 19 loss 0.03655312672522745 valid acc 16/16
+Epoch 19 loss 0.13171426599009153 valid acc 16/16
+Epoch 19 loss 0.2543638188258227 valid acc 16/16
+Epoch 19 loss 0.459333950039138 valid acc 16/16
+Epoch 19 loss 0.12254908392368674 valid acc 16/16
+Epoch 19 loss 0.22925320259940446 valid acc 16/16
+Epoch 19 loss 0.5948550806602255 valid acc 16/16
+Epoch 19 loss 0.08731720362062767 valid acc 16/16
+Epoch 19 loss 0.014373840740119215 valid acc 16/16
+Epoch 19 loss 0.2087283713862499 valid acc 16/16
+Epoch 19 loss 1.0122089153429186 valid acc 16/16
+Epoch 19 loss 0.11891707024429532 valid acc 16/16
+Epoch 19 loss 0.48257442763649616 valid acc 16/16
+Epoch 19 loss 0.05594509939529224 valid acc 16/16
+Epoch 19 loss 0.4352811828664186 valid acc 16/16
+Epoch 19 loss 0.019967560673612272 valid acc 16/16
+Epoch 19 loss 0.4966260735042018 valid acc 16/16
+Epoch 19 loss 0.7047094871938246 valid acc 16/16
+Epoch 19 loss 0.13055442388973082 valid acc 15/16
+Epoch 19 loss 0.2600547884486265 valid acc 16/16
+Epoch 19 loss 0.5166720870348227 valid acc 16/16
+Epoch 19 loss 0.014161814632585368 valid acc 16/16
+Epoch 19 loss 0.07120295650754543 valid acc 16/16
+Epoch 19 loss 0.06833744675719378 valid acc 16/16
+Epoch 19 loss 0.025109430174288294 valid acc 16/16
+Epoch 19 loss 0.2948727846971285 valid acc 16/16
+Epoch 19 loss 0.06262717552086872 valid acc 16/16
+Epoch 19 loss 0.27572180499574056 valid acc 16/16
+Epoch 19 loss 0.030815023532657193 valid acc 16/16
+Epoch 19 loss 0.043773409805667296 valid acc 16/16
+Epoch 19 loss 0.22012482463403715 valid acc 16/16
+Epoch 19 loss 0.048961420474316175 valid acc 16/16
+Epoch 19 loss 0.11862847660602077 valid acc 16/16
+Epoch 19 loss 0.9494682940072546 valid acc 16/16
+Epoch 19 loss 0.2109052122107158 valid acc 16/16
+Epoch 19 loss 0.6710768017705416 valid acc 16/16
+Epoch 19 loss 0.4681955958612323 valid acc 16/16
+Epoch 19 loss 0.6368671064678062 valid acc 15/16
+Epoch 19 loss 0.026341809018926243 valid acc 15/16
+Epoch 19 loss 0.18877706439515518 valid acc 16/16
+Epoch 19 loss 0.2855961501166221 valid acc 16/16
+Epoch 19 loss 0.04052984215738881 valid acc 16/16
+Epoch 19 loss 0.5866223132229491 valid acc 16/16
+Epoch 19 loss 0.46235646055400587 valid acc 16/16
+Epoch 19 loss 0.5040302432158766 valid acc 16/16
+Epoch 19 loss 0.33712803667985536 valid acc 16/16
+Epoch 19 loss 0.04466444429804589 valid acc 16/16
+Epoch 19 loss 0.08490262511026953 valid acc 16/16
+Epoch 19 loss 0.272445659354722 valid acc 16/16
+Epoch 20 loss 0.005028475766606644 valid acc 16/16
+Epoch 20 loss 0.07648601213750156 valid acc 16/16
+Epoch 20 loss 0.09110787235798384 valid acc 16/16
+Epoch 20 loss 0.18469997407329375 valid acc 16/16
+Epoch 20 loss 0.2605318433824654 valid acc 16/16
+Epoch 20 loss 0.09550063251877058 valid acc 16/16
+Epoch 20 loss 0.12925931942203345 valid acc 16/16
+Epoch 20 loss 0.5206857520211389 valid acc 16/16
+Epoch 20 loss 0.05024973559093626 valid acc 16/16
+Epoch 20 loss 0.13768259679834308 valid acc 16/16
+Epoch 20 loss 0.10918567623445774 valid acc 16/16
+Epoch 20 loss 0.43416647347765674 valid acc 16/16
+Epoch 20 loss 0.5289718391117081 valid acc 16/16
+Epoch 20 loss 0.1056090676006281 valid acc 16/16
+Epoch 20 loss 0.1632200224449693 valid acc 16/16
+Epoch 20 loss 0.061284369119803006 valid acc 16/16
+Epoch 20 loss 0.26750115677156483 valid acc 16/16
+Epoch 20 loss 0.29021649555848783 valid acc 16/16
+Epoch 20 loss 0.3377674621776468 valid acc 16/16
+Epoch 20 loss 0.07024091143406064 valid acc 16/16
+Epoch 20 loss 0.3040511966030722 valid acc 16/16
+Epoch 20 loss 0.15033623953787162 valid acc 16/16
+Epoch 20 loss 0.30615138278696136 valid acc 16/16
+Epoch 20 loss 0.2960404877189944 valid acc 16/16
+Epoch 20 loss 0.16331490141393282 valid acc 16/16
+Epoch 20 loss 0.06680170894129933 valid acc 16/16
+Epoch 20 loss 0.3178929109950745 valid acc 16/16
+Epoch 20 loss 0.015197713784295686 valid acc 16/16
+Epoch 20 loss 0.3794470004627916 valid acc 16/16
+Epoch 20 loss 0.03783035820214192 valid acc 16/16
+Epoch 20 loss 0.2456921448727153 valid acc 16/16
+Epoch 20 loss 0.1455018973257174 valid acc 16/16
+Epoch 20 loss 0.072312139044375 valid acc 16/16
+Epoch 20 loss 0.3826040876127622 valid acc 16/16
+Epoch 20 loss 0.6961360107444241 valid acc 16/16
+Epoch 20 loss 0.3645047996974816 valid acc 16/16
+Epoch 20 loss 0.592393918486247 valid acc 16/16
+Epoch 20 loss 0.37033787082054603 valid acc 16/16
+Epoch 20 loss 0.09335598229232567 valid acc 16/16
+Epoch 20 loss 0.31388278352571697 valid acc 16/16
+Epoch 20 loss 0.008579531389667272 valid acc 16/16
+Epoch 20 loss 0.6139009509357185 valid acc 16/16
+Epoch 20 loss 0.5084953626156967 valid acc 16/16
+Epoch 20 loss 0.2945540662730573 valid acc 16/16
+Epoch 20 loss 0.21414790147186014 valid acc 16/16
+Epoch 20 loss 0.023221016273413664 valid acc 16/16
+Epoch 20 loss 0.23079451268816475 valid acc 15/16
+Epoch 20 loss 0.32238372908355073 valid acc 16/16
+Epoch 20 loss 0.3359818703353638 valid acc 16/16
+Epoch 20 loss 0.12278716052715288 valid acc 16/16
+Epoch 20 loss 0.4662875470264336 valid acc 15/16
+Epoch 20 loss 0.3770591705684616 valid acc 16/16
+Epoch 20 loss 0.051565751724058195 valid acc 16/16
+Epoch 20 loss 0.02636596504354194 valid acc 16/16
+Epoch 20 loss 0.39720404551918387 valid acc 15/16
+Epoch 20 loss 0.23645505231123526 valid acc 15/16
+Epoch 20 loss 0.5032204291409795 valid acc 16/16
+Epoch 20 loss 0.07954654518722015 valid acc 16/16
+Epoch 20 loss 0.07401871184840386 valid acc 16/16
+Epoch 20 loss 0.41726395696188395 valid acc 15/16
+Epoch 20 loss 0.13293357259647864 valid acc 15/16
+Epoch 20 loss 0.33412471629748824 valid acc 15/16
+Epoch 20 loss 0.2598693497070246 valid acc 16/16
+Epoch 21 loss 0.0053214456779989705 valid acc 16/16
+Epoch 21 loss 0.09385789084446189 valid acc 16/16
+Epoch 21 loss 0.27458752578194723 valid acc 16/16
+Epoch 21 loss 0.08203021495329799 valid acc 15/16
+Epoch 21 loss 0.33131379674494366 valid acc 15/16
+Epoch 21 loss 0.034917471290539626 valid acc 15/16
+Epoch 21 loss 0.23623541675811044 valid acc 15/16
+Epoch 21 loss 0.08895918120117108 valid acc 16/16
+Epoch 21 loss 0.051149560465426624 valid acc 16/16
+Epoch 21 loss 0.6587812290290616 valid acc 15/16
+Epoch 21 loss 0.12774384228996266 valid acc 15/16
+Epoch 21 loss 0.32643807768782596 valid acc 15/16
+Epoch 21 loss 0.4129392933947537 valid acc 16/16
+Epoch 21 loss 0.09365122456716593 valid acc 16/16
+Epoch 21 loss 0.1031859794259457 valid acc 16/16
+Epoch 21 loss 0.7944535643176879 valid acc 16/16
+Epoch 21 loss 0.30529259667914405 valid acc 15/16
+Epoch 21 loss 0.4310953112057582 valid acc 15/16
+Epoch 21 loss 0.9337951603561483 valid acc 14/16
+Epoch 21 loss 0.4316764528781738 valid acc 15/16
+Epoch 21 loss 0.8959717357054644 valid acc 16/16
+Epoch 21 loss 0.1669252708135974 valid acc 16/16
+Epoch 21 loss 0.021878682436287766 valid acc 16/16
+Epoch 21 loss 0.015295306713340562 valid acc 16/16
+Epoch 21 loss 0.4979693784293808 valid acc 16/16
+Epoch 21 loss 0.1207961270251654 valid acc 16/16
+Epoch 21 loss 0.24895799871385837 valid acc 15/16
+Epoch 21 loss 0.1671883173908195 valid acc 15/16
+Epoch 21 loss 0.13861422784537752 valid acc 15/16
+Epoch 21 loss 0.243384743062188 valid acc 15/16
+Epoch 21 loss 0.4126551751410223 valid acc 16/16
+Epoch 21 loss 0.2790257235944783 valid acc 16/16
+Epoch 21 loss 0.08348265715276859 valid acc 16/16
+Epoch 21 loss 0.5467241579403189 valid acc 16/16
+Epoch 21 loss 0.8483734088056283 valid acc 15/16
+Epoch 21 loss 0.6179556521709104 valid acc 16/16
+Epoch 21 loss 0.24601694014636152 valid acc 16/16
+Epoch 21 loss 0.3723293134974918 valid acc 16/16
+Epoch 21 loss 0.2917524296192956 valid acc 16/16
+Epoch 21 loss 0.11131638314999881 valid acc 16/16
+Epoch 21 loss 0.3449787667548957 valid acc 16/16
+Epoch 21 loss 0.23423501515420864 valid acc 16/16
+Epoch 21 loss 0.26693361612243327 valid acc 15/16
+Epoch 21 loss 0.3285017271291729 valid acc 16/16
+Epoch 21 loss 0.24629628018876837 valid acc 15/16
+Epoch 21 loss 0.05973132870926018 valid acc 15/16
+Epoch 21 loss 0.4370861719734237 valid acc 16/16
+Epoch 21 loss 0.3078452346038949 valid acc 16/16
+Epoch 21 loss 0.1161879609487605 valid acc 16/16
+Epoch 21 loss 0.22283063368970546 valid acc 16/16
+Epoch 21 loss 0.2018447822531878 valid acc 16/16
+Epoch 21 loss 0.1101837060110735 valid acc 16/16
+Epoch 21 loss 0.3904858402378327 valid acc 15/16
+Epoch 21 loss 0.14804217768611339 valid acc 16/16
+Epoch 21 loss 0.161676353224429 valid acc 16/16
+Epoch 21 loss 0.06787769008304578 valid acc 16/16
+Epoch 21 loss 0.3556731578503002 valid acc 16/16
+Epoch 21 loss 0.32734387667114156 valid acc 15/16
+Epoch 21 loss 0.5286073266195113 valid acc 15/16
+Epoch 21 loss 0.19102846363879344 valid acc 15/16
+Epoch 21 loss 0.24700915116585082 valid acc 15/16
+Epoch 21 loss 0.37705444572943464 valid acc 15/16
+Epoch 21 loss 0.2372376787610258 valid acc 16/16
+Epoch 22 loss 0.0008333047338695554 valid acc 16/16
+Epoch 22 loss 0.1895363103577561 valid acc 16/16
+Epoch 22 loss 0.15464507020785317 valid acc 16/16
+Epoch 22 loss 0.1100260045088875 valid acc 16/16
+Epoch 22 loss 0.017136172012425233 valid acc 16/16
+Epoch 22 loss 0.18455985388227625 valid acc 16/16
+Epoch 22 loss 0.9187995247565184 valid acc 15/16
+Epoch 22 loss 0.639318905081135 valid acc 16/16
+Epoch 22 loss 0.14699865404876694 valid acc 16/16
+Epoch 22 loss 0.11090175769867744 valid acc 16/16
+Epoch 22 loss 0.10979913024550947 valid acc 16/16
+Epoch 22 loss 1.171189874260674 valid acc 16/16
+Epoch 22 loss 0.04860633430738148 valid acc 16/16
+Epoch 22 loss 0.3542722714030558 valid acc 16/16
+Epoch 22 loss 0.25584176128218206 valid acc 15/16
+Epoch 22 loss 0.26058479230038084 valid acc 16/16
+Epoch 22 loss 0.15469136479536155 valid acc 16/16
+Epoch 22 loss 0.5034901823473508 valid acc 16/16
+Epoch 22 loss 0.4560976857491756 valid acc 16/16
+Epoch 22 loss 0.2873318907547493 valid acc 15/16
+Epoch 22 loss 0.16048926280003806 valid acc 15/16
+Epoch 22 loss 0.6232946832999197 valid acc 16/16
+Epoch 22 loss 0.29309119434833397 valid acc 15/16
+Epoch 22 loss 0.5119834921436888 valid acc 15/16
+Epoch 22 loss 0.8208688765739164 valid acc 15/16
+Epoch 22 loss 0.4304476040558655 valid acc 15/16
+Epoch 22 loss 0.4138563565882944 valid acc 15/16
+Epoch 22 loss 0.03794178730561315 valid acc 15/16
+Epoch 22 loss 0.15981943628500234 valid acc 15/16
+Epoch 22 loss 0.13346718030867022 valid acc 15/16
+Epoch 22 loss 0.007147689214685282 valid acc 15/16
+Epoch 22 loss 0.05027691363911341 valid acc 15/16
+Epoch 22 loss 0.3909521144365115 valid acc 16/16
+Epoch 22 loss 0.2633939830780466 valid acc 15/16
+Epoch 22 loss 0.30377693126063765 valid acc 16/16
+Epoch 22 loss 0.08800947096465367 valid acc 16/16
+Epoch 22 loss 0.08950104974489137 valid acc 16/16
+Epoch 22 loss 0.7641471646753019 valid acc 16/16
+Epoch 22 loss 0.11747189379568929 valid acc 16/16
+Epoch 22 loss 0.0719493317427399 valid acc 16/16
+Epoch 22 loss 0.05475890045653842 valid acc 16/16
+Epoch 22 loss 0.25378612596929806 valid acc 16/16
+Epoch 22 loss 0.13190853401497815 valid acc 16/16
+Epoch 22 loss 0.08936971615491468 valid acc 16/16
+Epoch 22 loss 0.1561033192873167 valid acc 16/16
+Epoch 22 loss 0.06733687742701153 valid acc 16/16
+Epoch 22 loss 0.17193542143463364 valid acc 16/16
+Epoch 22 loss 0.07484679885925055 valid acc 16/16
+Epoch 22 loss 0.081146647305123 valid acc 16/16
+Epoch 22 loss 0.33885754209974117 valid acc 16/16
+Epoch 22 loss 0.14398843218631552 valid acc 16/16
+Epoch 22 loss 0.10615187382960994 valid acc 16/16
+Epoch 22 loss 0.029418775842335543 valid acc 16/16
+Epoch 22 loss 0.05501542633154188 valid acc 16/16
+Epoch 22 loss 0.30307126226479714 valid acc 16/16
+Epoch 22 loss 0.17021210070844398 valid acc 15/16
+Epoch 22 loss 0.23530416711144986 valid acc 16/16
+Epoch 22 loss 0.11247134093145544 valid acc 16/16
+Epoch 22 loss 0.1273304802880053 valid acc 16/16
+Epoch 22 loss 0.04451458732344227 valid acc 16/16
+Epoch 22 loss 0.04729562577755009 valid acc 16/16
+Epoch 22 loss 0.07325989557705836 valid acc 16/16
+Epoch 22 loss 0.07347795987121308 valid acc 16/16
+Epoch 23 loss 0.0005805266295006994 valid acc 16/16
+Epoch 23 loss 0.07955003816638972 valid acc 16/16
+Epoch 23 loss 0.20749279271449333 valid acc 16/16
+Epoch 23 loss 0.3284123104197464 valid acc 16/16
+Epoch 23 loss 0.010016408186458214 valid acc 16/16
+Epoch 23 loss 0.3920126761459816 valid acc 16/16
+Epoch 23 loss 0.3132282887318206 valid acc 16/16
+Epoch 23 loss 0.0695538325341476 valid acc 16/16
+Epoch 23 loss 0.05737316918306379 valid acc 16/16
+Epoch 23 loss 0.37071084167866664 valid acc 16/16
+Epoch 23 loss 0.07424880648313775 valid acc 16/16
+Epoch 23 loss 0.2100172909435244 valid acc 16/16
+Epoch 23 loss 0.4900456903040952 valid acc 16/16
+Epoch 23 loss 0.43332755763832187 valid acc 16/16
+Epoch 23 loss 0.5647484685781432 valid acc 16/16
+Epoch 23 loss 0.15441102721975017 valid acc 16/16
+Epoch 23 loss 0.3642826372328225 valid acc 16/16
+Epoch 23 loss 0.7997216985580293 valid acc 16/16
+Epoch 23 loss 0.1496802266885146 valid acc 16/16
+Epoch 23 loss 0.044054722389596346 valid acc 16/16
+Epoch 23 loss 0.13788016366263722 valid acc 16/16
+Epoch 23 loss 0.0691051321111058 valid acc 16/16
+Epoch 23 loss 0.021494058044989883 valid acc 16/16
+Epoch 23 loss 0.010815703247654795 valid acc 16/16
+Epoch 23 loss 0.0177883102587173 valid acc 16/16
+Epoch 23 loss 0.08918722840463905 valid acc 16/16
+Epoch 23 loss 0.2471018943538062 valid acc 16/16
+Epoch 23 loss 0.21654866629216074 valid acc 16/16
+Epoch 23 loss 0.3266327904848432 valid acc 16/16
+Epoch 23 loss 0.00847705113044872 valid acc 16/16
+Epoch 23 loss 0.012913549882579423 valid acc 16/16
+Epoch 23 loss 0.20163886326032643 valid acc 16/16
+Epoch 23 loss 0.21834799145948658 valid acc 15/16
+Epoch 23 loss 0.1607047236601271 valid acc 16/16
+Epoch 23 loss 0.21761685257712216 valid acc 16/16
+Epoch 23 loss 0.060758988144321235 valid acc 16/16
+Epoch 23 loss 0.013127810052980804 valid acc 16/16
+Epoch 23 loss 0.0502422882636 valid acc 16/16
+Epoch 23 loss 0.38122832878341856 valid acc 16/16
+Epoch 23 loss 0.10872049077089199 valid acc 16/16
+Epoch 23 loss 0.012059495830453404 valid acc 16/16
+Epoch 23 loss 0.3046778781897926 valid acc 16/16
+Epoch 23 loss 0.07356263662942475 valid acc 16/16
+Epoch 23 loss 0.4720927617222791 valid acc 16/16
+Epoch 23 loss 0.26642752813742443 valid acc 16/16
+Epoch 23 loss 0.0537903695385088 valid acc 16/16
+Epoch 23 loss 0.10914247539573729 valid acc 16/16
+Epoch 23 loss 1.0068460760822031 valid acc 16/16
+Epoch 23 loss 0.5271904823466705 valid acc 16/16
+Epoch 23 loss 0.16144229293539475 valid acc 16/16
+Epoch 23 loss 0.19987000096840413 valid acc 16/16
+Epoch 23 loss 0.31123725015927606 valid acc 16/16
+Epoch 23 loss 1.2514466806975129 valid acc 16/16
+Epoch 23 loss 0.014980897524128678 valid acc 16/16
+Epoch 23 loss 0.10443690593143556 valid acc 16/16
+Epoch 23 loss 0.2346791004565896 valid acc 15/16
+Epoch 23 loss 0.9740684792898033 valid acc 16/16
+Epoch 23 loss 0.21618336044769754 valid acc 16/16
+Epoch 23 loss 0.08614703776931487 valid acc 16/16
+Epoch 23 loss 0.16364481295873345 valid acc 16/16
+Epoch 23 loss 0.12817369102856346 valid acc 16/16
+Epoch 23 loss 0.39248633555578516 valid acc 16/16
+Epoch 23 loss 0.19331006901670156 valid acc 16/16
+Epoch 24 loss 0.0008160615209575894 valid acc 16/16
+Epoch 24 loss 0.5048225345021008 valid acc 16/16
+Epoch 24 loss 0.26331953923208123 valid acc 16/16
+Epoch 24 loss 0.09399286288104458 valid acc 16/16
+Epoch 24 loss 0.013757677620458209 valid acc 16/16
+Epoch 24 loss 0.1414757595472267 valid acc 16/16
+Epoch 24 loss 0.256973750806997 valid acc 16/16
+Epoch 24 loss 0.15141423141504562 valid acc 16/16
+Epoch 24 loss 0.09233577229095874 valid acc 16/16
+Epoch 24 loss 0.08688468646459868 valid acc 16/16
+Epoch 24 loss 0.13001603286058266 valid acc 16/16
+Epoch 24 loss 0.12682436403445424 valid acc 16/16
+Epoch 24 loss 0.2542046940434072 valid acc 16/16
+Epoch 24 loss 0.03913311283836962 valid acc 16/16
+Epoch 24 loss 0.14980918951519595 valid acc 16/16
+Epoch 24 loss 0.001630304245420433 valid acc 16/16
+Epoch 24 loss 0.08341506587560671 valid acc 16/16
+Epoch 24 loss 0.06240760212837054 valid acc 16/16
+Epoch 24 loss 0.07442003926215993 valid acc 16/16
+Epoch 24 loss 0.21329441533624588 valid acc 16/16
+Epoch 24 loss 0.036751679649363045 valid acc 16/16
+Epoch 24 loss 0.19135849842372799 valid acc 16/16
+Epoch 24 loss 0.008006085957596998 valid acc 16/16
+Epoch 24 loss 0.017515398514252323 valid acc 16/16
+Epoch 24 loss 0.07697906704955554 valid acc 16/16
+Epoch 24 loss 0.2505649636512279 valid acc 16/16
+Epoch 24 loss 0.1706110878651933 valid acc 16/16
+Epoch 24 loss 0.5576874373974048 valid acc 16/16
+Epoch 24 loss 0.30394165390592215 valid acc 16/16
+Epoch 24 loss 0.2388562572198808 valid acc 16/16
+Epoch 24 loss 0.2830329846428145 valid acc 16/16
+Epoch 24 loss 0.2021710630574788 valid acc 16/16
+Epoch 24 loss 0.055488927903418306 valid acc 16/16
+Epoch 24 loss 0.35402563579766044 valid acc 16/16
+Epoch 24 loss 0.11157854361135428 valid acc 16/16
+Epoch 24 loss 0.1743307245140998 valid acc 16/16
+Epoch 24 loss 0.031831284328514786 valid acc 16/16
+Epoch 24 loss 0.3085976925798721 valid acc 16/16
+Epoch 24 loss 1.2402942577199725 valid acc 16/16
+Epoch 24 loss 0.4721723514297421 valid acc 16/16
+Epoch 24 loss 0.02879957661760324 valid acc 16/16
+Epoch 24 loss 0.394086701148313 valid acc 16/16
+Epoch 24 loss 0.08744412910960353 valid acc 16/16
+Epoch 24 loss 0.039791469373184396 valid acc 16/16
+Epoch 24 loss 0.23442154199364817 valid acc 16/16
+Epoch 24 loss 0.22330788355109982 valid acc 16/16
+Epoch 24 loss 0.013627271784186101 valid acc 16/16
+Epoch 24 loss 0.24720919051036613 valid acc 16/16
+Epoch 24 loss 0.35535638731744423 valid acc 16/16
+Epoch 24 loss 0.38229795204521316 valid acc 16/16
+Epoch 24 loss 0.17205793136073955 valid acc 16/16
+Epoch 24 loss 0.10951250750463393 valid acc 16/16
+Epoch 24 loss 0.25855356835703847 valid acc 16/16
+Epoch 24 loss 0.15897954817697496 valid acc 16/16
+Epoch 24 loss 0.6771380668687408 valid acc 16/16
+Epoch 24 loss 0.011759862599573845 valid acc 16/16
+Epoch 24 loss 0.0833015334251361 valid acc 16/16
+Epoch 24 loss 0.04373393596389663 valid acc 16/16
+Epoch 24 loss 0.24273120007978327 valid acc 15/16
+Epoch 24 loss 0.08530557300227964 valid acc 15/16
+Epoch 24 loss 0.07661358604973634 valid acc 15/16
+Epoch 24 loss 0.01381775264571794 valid acc 16/16
+Epoch 24 loss 0.13778609816254353 valid acc 15/16
+Epoch 25 loss 0.0005508235003854889 valid acc 15/16
+Epoch 25 loss 0.2411285186005448 valid acc 15/16
+Epoch 25 loss 0.15865310340612349 valid acc 15/16
+Epoch 25 loss 0.34145925339286914 valid acc 15/16
+Epoch 25 loss 0.005168940350817941 valid acc 15/16
+Epoch 25 loss 0.15504891589740344 valid acc 16/16
+Epoch 25 loss 0.20886968053877272 valid acc 15/16
+Epoch 25 loss 0.11218089934478714 valid acc 16/16
+Epoch 25 loss 0.07041016993965221 valid acc 16/16
+Epoch 25 loss 0.11098332441875042 valid acc 16/16
+Epoch 25 loss 0.23558513934175523 valid acc 16/16
+Epoch 25 loss 0.45966930293290165 valid acc 15/16
+Epoch 25 loss 0.7065916667451427 valid acc 15/16
+Epoch 25 loss 0.3861021834291413 valid acc 16/16
+Epoch 25 loss 0.05280309391388355 valid acc 16/16
+Epoch 25 loss 0.15475236051575503 valid acc 16/16
+Epoch 25 loss 0.13793626377014884 valid acc 16/16
+Epoch 25 loss 0.9541974470294372 valid acc 16/16
+Epoch 25 loss 0.7790773697183523 valid acc 16/16
+Epoch 25 loss 0.25556852443735945 valid acc 16/16
+Epoch 25 loss 0.12196080292323691 valid acc 16/16
+Epoch 25 loss 0.014154902530612468 valid acc 16/16
+Epoch 25 loss 0.02973972917689316 valid acc 16/16
+Epoch 25 loss 0.45841645600545056 valid acc 16/16
+Epoch 25 loss 0.19950628542824989 valid acc 16/16
+Epoch 25 loss 0.07900859801292759 valid acc 16/16
+Epoch 25 loss 0.1967145792707579 valid acc 16/16
+Epoch 25 loss 0.009501528751238553 valid acc 16/16
+Epoch 25 loss 0.17934277407639665 valid acc 16/16
+Epoch 25 loss 0.07429678199597994 valid acc 16/16
+Epoch 25 loss 0.04596440078072134 valid acc 16/16
+Epoch 25 loss 0.02546714903154146 valid acc 16/16
+Epoch 25 loss 0.39795539246441286 valid acc 16/16
+Epoch 25 loss 0.36905298995770136 valid acc 16/16
+Epoch 25 loss 0.33612992012966875 valid acc 16/16
+Epoch 25 loss 0.12812674904188787 valid acc 16/16
+Epoch 25 loss 0.11278953787426815 valid acc 16/16
+Epoch 25 loss 0.5209009468015015 valid acc 16/16
+Epoch 25 loss 0.09719385947863513 valid acc 16/16
+Epoch 25 loss 0.21397579362800523 valid acc 16/16
+Epoch 25 loss 0.04833498264474656 valid acc 16/16
+Epoch 25 loss 0.04176764344986206 valid acc 16/16
+Epoch 25 loss 0.06036704193082082 valid acc 16/16
+Epoch 25 loss 0.42848874562763684 valid acc 16/16
+Epoch 25 loss 0.6895794416522631 valid acc 16/16
+Epoch 25 loss 0.3246750716988557 valid acc 16/16
+Epoch 25 loss 0.1524599211877843 valid acc 16/16
+Epoch 25 loss 0.27271920791367665 valid acc 16/16
+Epoch 25 loss 0.02405602654675043 valid acc 16/16
+Epoch 25 loss 0.005425033041785765 valid acc 16/16
+Epoch 25 loss 0.09515543683044697 valid acc 16/16
+Epoch 25 loss 0.08927287777585757 valid acc 16/16
+Epoch 25 loss 0.976793507481237 valid acc 16/16
+Epoch 25 loss 0.07420685515850478 valid acc 16/16
+Epoch 25 loss 0.1195934855281359 valid acc 16/16
+Epoch 25 loss 0.717747992939489 valid acc 16/16
+Epoch 25 loss 0.48412028551059844 valid acc 16/16
+Epoch 25 loss 0.2362341547127954 valid acc 16/16
+Epoch 25 loss 0.22690783966963868 valid acc 16/16
+Epoch 25 loss 0.02107764328338463 valid acc 16/16
+Epoch 25 loss 0.4114199583663542 valid acc 16/16
+Epoch 25 loss 0.0460257195525014 valid acc 16/16
+Epoch 25 loss 0.21787507781294965 valid acc 16/16

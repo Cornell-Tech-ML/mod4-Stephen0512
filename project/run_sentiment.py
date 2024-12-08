@@ -105,7 +105,7 @@ class CNNSentimentKim(minitorch.Module):
         """
         # Rearrange dimensions for conv1d operation
         # From: [batch x sentence_length x embedding_dim]
-        # To:   [batch x embedding_dim x sentence_length] 
+        # To:   [batch x embedding_dim x sentence_length]
         reshaped_embeddings = embeddings.permute(0, 2, 1)
 
         # Apply each of the three conv layers and max-pool over time dimension
@@ -129,7 +129,7 @@ class CNNSentimentKim(minitorch.Module):
 
         # Apply linear layer to get raw logits
         linear_output = self.linear(reshaped_features)
-        
+
         # Apply dropout during training with specified dropout rate
         if self.training:
             linear_output = minitorch.nn.dropout(linear_output, self.dropout)

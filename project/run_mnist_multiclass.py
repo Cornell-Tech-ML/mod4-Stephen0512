@@ -85,13 +85,13 @@ class Network(minitorch.Module):
 
         # First convolutional layer: 1 input channel -> 4 output channels, 3x3 kernel
         self.conv1 = Conv2d(1, 4, 3, 3)
-        
+
         # Second convolutional layer: 4 input channels -> 8 output channels, 3x3 kernel
         self.conv2 = Conv2d(4, 8, 3, 3)
-        
+
         # First linear layer: 392 input features -> 64 output features
         self.linear1 = Linear(392, 64)
-        
+
         # Second linear layer: 64 input features -> C output classes
         self.linear2 = Linear(64, C)
 
@@ -100,7 +100,7 @@ class Network(minitorch.Module):
 
         Args:
         -----
-            x: Input tensor of shape (batch_size, channels=1, height, width) 
+            x: Input tensor of shape (batch_size, channels=1, height, width)
                 containing the MNIST digit images
 
         Returns:
@@ -111,28 +111,28 @@ class Network(minitorch.Module):
         # Apply first convolutional layer and followed by ReLU activation
         mid = self.conv1.forward(x).relu()
         self.mid = mid
-        
+
         # Apply second convolutional layer and followed by ReLU activation
         out = self.conv2.forward(mid).relu()
         self.out = out
-        
+
         # Apply two-dimensional max pooling with 4x4 kernel
         pooled_features = minitorch.nn.maxpool2d(out, (4, 4))
-        
+
         # Flatten the pooled features: batch x channels x height x width -> batch_size x (channels * height * width)
         # Should be batch_size x 392
         flattened_features = pooled_features.view(BATCH, 392)
-        
+
         # Apply first linear layer and followed by ReLU activation
         linear1_output = self.linear1.forward(flattened_features).relu()
-        
+
         # Apply dropout with rate 25% if training
         if self.training:
             linear1_output = minitorch.nn.dropout(linear1_output, 0.25)
-            
+
         # Apply second linear layer
         linear2_output = self.linear2.forward(linear1_output)
-        
+
         # Apply log softmax over class dimension for final classification
         results = minitorch.nn.logsoftmax(linear2_output, dim=1)
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Iterable, Tuple, Protocol
+from typing import Any, Iterable, List, Tuple, Protocol
 
 
 # ## Task 1.1
@@ -104,31 +104,34 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
         Non-constant Variables in topological order starting from the right.
 
     """
-    # Declare a set to keep track of visited variables
-    visited = set()
-    # Declare a list to store the variables in topological order.
-    order = []
+    # ASSIGNMENT 1.4
+
+    # Initialize empty list to store variables in topological order
+    order: List[Variable] = []
+    # Set to keep track of visited variables
+    seen = set()
 
     def visit(var: Variable) -> None:
-        # Check if the variable has been visited or is constant
-        if var.unique_id in visited or var.is_constant():
-            return  # Skip it
+        # Skip if variable was already visited or is constant
+        if var.unique_id in seen or var.is_constant():
+            return
+        # For non-leaf variables, recursively visit their parents first
+        if not var.is_leaf():
+            for parent in var.parents:
+                # Only visit non-constant parents
+                if not parent.is_constant():
+                    visit(parent)
+        # Mark variable as seen
+        seen.add(var.unique_id)
+        # Add variable to start of order list (reverse topological order)
+        order.insert(0, var)
 
-        # Mark the current variable as visited
-        visited.add(var.unique_id)
-
-        # Recursively visit all parent variables
-        for parent in var.parents:
-            visit(parent)
-
-        # After visiting all parents, add the current variable to the order
-        order.append(var)
-
-    # Start visit() from the given variable
+    # Start DFS from the rightmost variable
     visit(variable)
+    # Return variables in topological order
+    return order
 
-    # Reverse the order to start from the right-most variable and return it
-    return reversed(order)
+    # END ASSIGNMENT 1.4
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -162,11 +165,14 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
         else:
             # Call the chain_rule method to compute the derivatives of the parents
             for parent, parent_deriv in var.chain_rule(deriv):
-                # Accumulate derivatives for the variable
-                if parent.unique_id in derivatives:
-                    derivatives[parent.unique_id] += parent_deriv
-                else:
-                    derivatives[parent.unique_id] = parent_deriv
+                # Skip constant variables since their derivatives don't need to be computed
+                if parent.is_constant():
+                    continue
+                # Initialize derivative for parent to 0 if not already in derivatives dict
+                derivatives.setdefault(parent.unique_id, 0)
+                # Add the computed parent derivative to any existing derivative
+                # This handles the case where a variable has multiple children
+                derivatives[parent.unique_id] += parent_deriv
 
 
 @dataclass
