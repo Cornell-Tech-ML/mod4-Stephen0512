@@ -831,7 +831,7 @@ python project/run_mnist_multiclass.py
 
 #### Model Training Results
 
-Multiple runs were performed to obtain the best validation accuracy. The final model achieved majority 16/16 classification accuracy on the MNISTvalidation set.
+Multiple runs were performed to obtain the best validation accuracy. The final model achieved majority 16/16 classification accuracy on the MNIST validation set.
 
 The full training log can be found in [mnist.txt](mnist.txt).
 
