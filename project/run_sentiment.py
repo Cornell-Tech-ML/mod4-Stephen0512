@@ -34,8 +34,24 @@ class Conv1d(minitorch.Module):
         self.bias = RParam(1, out_channels, 1)
 
     def forward(self, input):
-        # TODO: Implement for Task 4.5.
-        raise NotImplementedError("Need to implement for Task 4.5")
+        """Apply 1D convolution with bias to the input tensor.
+
+        Args:
+        -----
+            input: Input tensor of shape (batch_size, in_channels, width)
+
+        Returns:
+        --------
+            Tensor of shape (batch_size, out_channels, output_width) containing
+            the result of the convolution operation with added bias.
+            output_width = width - kernel_width + 1
+
+        """
+        # Apply 1D convolution to the input tensor
+        conv_result = minitorch.conv1d(input, self.weights.value)
+
+        # Add the bias tensor to the result
+        return conv_result + self.bias.value
 
 
 class CNNSentimentKim(minitorch.Module):
@@ -60,16 +76,79 @@ class CNNSentimentKim(minitorch.Module):
         dropout=0.25,
     ):
         super().__init__()
+
+        # Store model hyperparameters of the CNN including the feature map size and dropout rate
         self.feature_map_size = feature_map_size
-        # TODO: Implement for Task 4.5.
-        raise NotImplementedError("Need to implement for Task 4.5")
+        self.dropout = dropout
+
+        # Initialize conv_layers list for storing the three convolutional layers
+        self.conv_layers = []
+        
+        # Initialize a list of three parallel 1D convolutional layers for furture usages
+        for filter_size in filter_sizes:
+
+            # Each layer has different kernel width (filter_size) but same number of input and output channels
+            self.conv_layers.append(
+                Conv1d(
+                    in_channels=embedding_size,
+                    out_channels=feature_map_size,
+                    kernel_width=filter_size,
+                )
+            )
+
+        # Initialize the final fully connected layer for binary classification
+        self.linear = Linear(feature_map_size, 1)
 
     def forward(self, embeddings):
+        """Forward pass of the CNN Sentiment model accordingg to the instructions provided in the assignment.
+
+        Args:
+        -----
+            embeddings: Input tensor of shape [batch x sentence_length x embedding_dim]
+                containing word embeddings for each sentence
+
+        Returns:
+        --------
+            Tensor of shape [batch] containing sentiment predictions (0-1) for each sentence
+
         """
-        embeddings tensor: [batch x sentence length x embedding dim]
-        """
-        # TODO: Implement for Task 4.5.
-        raise NotImplementedError("Need to implement for Task 4.5")
+        # Rearrange dimensions for conv1d operation
+        # From: [batch x sentence_length x embedding_dim]
+        # To:   [batch x embedding_dim x sentence_length] 
+        embeddings = embeddings.permute(0, 2, 1)
+
+        # Apply each of the three conv layers and max-pool over time dimension
+        conv_outputs = []
+
+        # Iterate over each of the three convolutional layers defined in the init
+        for conv in self.conv_layers:
+            # Apply the convolutional layer and ReLU activation
+            features = conv.forward(embeddings).relu()
+            # Max-pool the features over the time dimension
+            pooled_features = minitorch.nn.max(features, 2)
+
+            # Append the pooled features to the list for future usages
+            conv_outputs.append(pooled_features)
+
+        # Combine max-pooled features from each of the three convolutional layers by adding them together
+        combined_features = sum(conv_outputs)
+
+        # Reshape the combined features by flattening the time dimension
+        batch_size = combined_features.shape[0]
+        reshaped_features = combined_features.view(batch_size, self.feature_map_size)
+
+        # Apply the final classification layer for the final binary classification
+        linear_output = self.linear.forward(reshaped_features)
+        
+        # Apply dropout with rate 25% only during training
+        if self.training:
+            linear_output = minitorch.nn.dropout(linear_output, self.dropout)
+
+        # Apply sigmoid activation in the end over the class dimension
+        results = linear_output.sigmoid().view(batch_size)
+
+        # Return the final classification results
+        return results
 
 
 # Evaluation helper methods
@@ -255,7 +334,7 @@ def encode_sentiment_data(dataset, pretrained_embeddings, N_train, N_val=0):
 if __name__ == "__main__":
     train_size = 450
     validation_size = 100
-    learning_rate = 0.01
+    learning_rate = 0.015
     max_epochs = 250
 
     (X_train, y_train), (X_val, y_val) = encode_sentiment_data(

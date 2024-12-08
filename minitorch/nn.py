@@ -281,15 +281,15 @@ def dropout(input: Tensor, p: float, ignore: bool = False) -> Tensor:
 
     """
     # If ignore is true or p is 0, return the input as is
-    if ignore or p == 0:
+    if ignore or p <= 0:
         return input
     
     # If p is 1, return a tensor of zeros with the same shape as the input
-    if p == 1:
+    if p >= 1:
         return input.zeros(input.shape)        
 
     # Generate random mask and drop out elements which the corresponding mask is less than p
     mask = rand(input.shape) > p
 
     # Return the input tensor with the dropped out elements
-    return mask * input
+    return input * mask
