@@ -81,20 +81,11 @@ class CNNSentimentKim(minitorch.Module):
         self.feature_map_size = feature_map_size
         self.dropout = dropout
 
-        # Initialize conv_layers list for storing the three convolutional layers
-        self.conv_layers = []
-        
         # Initialize a list of three parallel 1D convolutional layers for furture usages
-        for filter_size in filter_sizes:
-
-            # Each layer has different kernel width (filter_size) but same number of input and output channels
-            self.conv_layers.append(
-                Conv1d(
-                    in_channels=embedding_size,
-                    out_channels=feature_map_size,
-                    kernel_width=filter_size,
-                )
-            )
+        # Each layer has different kernel width (filter_size) but same number of input and output channels
+        self.conv_layer1 = Conv1d(embedding_size, feature_map_size, filter_sizes[0])
+        self.conv_layer2 = Conv1d(embedding_size, feature_map_size, filter_sizes[1])
+        self.conv_layer3 = Conv1d(embedding_size, feature_map_size, filter_sizes[2])
 
         # Initialize the final fully connected layer for binary classification
         self.linear = Linear(feature_map_size, 1)
@@ -115,37 +106,37 @@ class CNNSentimentKim(minitorch.Module):
         # Rearrange dimensions for conv1d operation
         # From: [batch x sentence_length x embedding_dim]
         # To:   [batch x embedding_dim x sentence_length] 
-        embeddings = embeddings.permute(0, 2, 1)
+        reshaped_embeddings = embeddings.permute(0, 2, 1)
 
         # Apply each of the three conv layers and max-pool over time dimension
         conv_outputs = []
 
-        # Iterate over each of the three convolutional layers defined in the init
-        for conv in self.conv_layers:
-            # Apply the convolutional layer and ReLU activation
-            features = conv.forward(embeddings).relu()
-            # Max-pool the features over the time dimension
-            pooled_features = minitorch.nn.max(features, 2)
+        # Apply the convolutional layer and ReLU activation for each of the three convolutional layers defined in the init
+        conv_outputs.append(self.conv_layer1.forward(reshaped_embeddings).relu())
+        conv_outputs.append(self.conv_layer2.forward(reshaped_embeddings).relu())
+        conv_outputs.append(self.conv_layer3.forward(reshaped_embeddings).relu())
 
-            # Append the pooled features to the list for future usages
-            conv_outputs.append(pooled_features)
+        # Max-pool the features over the time dimension for each of the three convolutional layers
+        for index in range(len(conv_outputs)):
+            conv_outputs[index] = minitorch.nn.max(conv_outputs[index], 2)
 
         # Combine max-pooled features from each of the three convolutional layers by adding them together
-        combined_features = sum(conv_outputs)
+        combined_features = conv_outputs[0] + conv_outputs[1] + conv_outputs[2]
 
-        # Reshape the combined features by flattening the time dimension
-        batch_size = combined_features.shape[0]
-        reshaped_features = combined_features.view(batch_size, self.feature_map_size)
+        # Reshape combined features to [batch_size x feature_map_size]
+        reshaped_batch_size = combined_features.shape[0]
+        reshaped_features = combined_features.view(reshaped_batch_size, self.feature_map_size)
 
-        # Apply the final classification layer for the final binary classification
-        linear_output = self.linear.forward(reshaped_features)
+        # Apply linear layer to get raw logits
+        linear_output = self.linear(reshaped_features)
         
-        # Apply dropout with rate 25% only during training
+        # Apply dropout during training with specified dropout rate
         if self.training:
             linear_output = minitorch.nn.dropout(linear_output, self.dropout)
 
-        # Apply sigmoid activation in the end over the class dimension
-        results = linear_output.sigmoid().view(batch_size)
+        # Apply sigmoid activation and reshape to [batch_size]
+        output_batch_size = linear_output.shape[0]
+        results = linear_output.sigmoid().view(output_batch_size)
 
         # Return the final classification results
         return results
@@ -334,7 +325,7 @@ def encode_sentiment_data(dataset, pretrained_embeddings, N_train, N_val=0):
 if __name__ == "__main__":
     train_size = 450
     validation_size = 100
-    learning_rate = 0.015
+    learning_rate = 0.01
     max_epochs = 250
 
     (X_train, y_train), (X_val, y_val) = encode_sentiment_data(
