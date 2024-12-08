@@ -8,6 +8,7 @@ from .autodiff import Context
 from .tensor import Tensor
 from .tensor_data import (
     MAX_DIMS,
+    Index,
     Shape,
     Strides,
     Storage,
@@ -89,13 +90,12 @@ def _tensor_conv1d(
     )
     s1 = input_strides
     s2 = weight_strides
-    s3 = out_strides
 
     # Calculate the result for each output position in parallel
     for out_pos in prange(out_size):
 
         # Declare an new index array for the current output position
-        out_index = np.empty(MAX_DIMS, np.int32)
+        out_index: Index = np.empty(MAX_DIMS, np.int32)
 
         # Convert the flat index of the current output position to the corresponding tensor indices
         to_index(out_pos, out_shape, out_index)
@@ -103,36 +103,40 @@ def _tensor_conv1d(
         # Extract the batch, output channel, and width indices from the output tensor indices
         out_batch, out_channel, out_width = out_index[0], out_index[1], out_index[2]
 
-        # Calculate the flat index of the current output position for further usages (Not necessary, but for illustration purposes)
-        out_pos_index = (
-            out_batch * s3[0] +
-            out_channel * s3[1] +
-            out_width * s3[2]
-        )
+        # Calculate the flat index of the current output position for further usages
+        out_pos_index = index_to_position(out_index, out_strides)
 
         # Declare a variable to calculate the sum of the dot product of the input and weight tensors for the current output position
         result = 0.0
 
         # Calculate dot product between each element in the input window and the weight kernel
         for in_channel in prange(in_channels):
-            for index in prange(kw):
+            for width_index in prange(kw):
 
-                # Determine input position based on the direction of the weight (reverse or not)
+                # Determine weight offset and input width based on the direction of the weight (reverse or not)
                 if reverse:
-                    input_width = out_width - index
+                    weight_width_offset = kw - 1 - width_index  # Reverse calculated the weight width offset
+                    input_width = out_width - weight_width_offset  # Calculated the input width by moving the input width to the left
                 else:
-                    input_width = out_width + index
+                    weight_width_offset = width_index  # Forward calculated the weight width offset
+                    input_width = out_width + weight_width_offset  # Calculated the input width by moving the input width to the right
 
                 # Check if the input index position is within the edges (Skip if not as 0 is used for out of bound input)
                 if input_width >= 0 and input_width < width:
 
                     # Calculate the flat indices of the current input position
-                    input_index = np.array([out_batch, in_channel, input_width], np.int32)
-                    input_pos = index_to_position(input_index, s1)
+                    input_pos = (
+                        out_batch * s1[0] +
+                        in_channel * s1[1] +
+                        input_width * s1[2]
+                    )
 
                     # Calculate the flat indices of the current weight position
-                    weight_index = np.array([out_channel, in_channel, index], np.int32)
-                    weight_pos = index_to_position(weight_index, s2)
+                    weight_pos = (
+                        out_channel * s2[0] +
+                        in_channel * s2[1] +
+                        weight_width_offset * s2[2]
+                    )
 
                     # Calculate the dot product of the input and weight and add it to the result
                     result += input[input_pos] * weight[weight_pos]
@@ -276,53 +280,50 @@ def _tensor_conv2d(
     # Declare intermediate variable for strides of input, weight, and output tensors
     s1 = input_strides
     s2 = weight_strides
-    s3 = out_strides
     
     # Extract the individual strides for each dimension of input, weight, and output tensors
     s10, s11, s12, s13 = s1[0], s1[1], s1[2], s1[3]
     s20, s21, s22, s23 = s2[0], s2[1], s2[2], s2[3]
-    s30, s31, s32, s33 = s3[0], s3[1], s3[2], s3[3]
 
     # Calculate the result for each output position in parallel
     for out_pos in prange(out_size):
 
         # Declare an new index array for the current output position
-        out_index = np.empty(MAX_DIMS, np.int32)
+        out_index: Index = np.empty(MAX_DIMS, np.int32)
 
         # Convert the flat index of the current output position to the corresponding tensor indices
         to_index(out_pos, out_shape, out_index)
 
-        # Extract the batch, output channel, height, and width indices from the output tensor indices
+        # Extract the batch, output channel, and width indices from the output tensor indices
         out_batch, out_channel, out_height, out_width = out_index[0], out_index[1], out_index[2], out_index[3]
 
-        # Calculate the flat index of the current output position for further usages (Not necessary, but for illustration purposes)
-        out_pos_index = (
-            out_batch * s30 +
-            out_channel * s31 +
-            out_height * s32 +
-            out_width * s33
-        )
+        # Calculate the flat index of the current output position for further usages
+        out_pos_index = index_to_position(out_index, out_strides)
 
         # Declare a variable to calculate the sum of the dot product of the input and weight tensors for the current output position
         result = 0.0
 
         # Calculate dot product between each element in the input window and the weight kernel
         for in_channel in prange(in_channels):
-            for weight_height in prange(kh):
-                for weight_width in prange(kw):
+            for height_index in prange(kh):
+                for width_index in prange(kw):
 
-                    # Determine input position based on the direction of the weight (reverse or not)
+                    # Determine weight offsets and input dimensions based on the direction of the weight (reverse or not)
                     if reverse:
-                        input_height = out_height - weight_height
-                        input_width = out_width - weight_width
+                        weight_height_offset = kh - 1 - height_index  # Reverse calculated the weight height offset
+                        weight_width_offset = kw - 1 - width_index  # Reverse calculated the weight width offset
+                        input_height = out_height - weight_height_offset  # Calculated the input height by moving the input height to the left
+                        input_width = out_width - weight_width_offset  # Calculated the input width by moving the input width to the left
                     else:
-                        input_height = out_height + weight_height
-                        input_width = out_width + weight_width
+                        weight_height_offset = height_index  # Forward calculated the weight height offset
+                        weight_width_offset = width_index  # Forward calculated the weight width offset
+                        input_height = out_height + weight_height_offset  # Calculated the input height by moving the input height to the right
+                        input_width = out_width + weight_width_offset  # Calculated the input width by moving the input width to the right
 
-                    # Check if the input index position is within the edges (Skip if not as 0 is used for out of bound input)
+                    # Check if the input height and width index position are within the edges (Skip if not as 0 is used for out of bound input)
                     if input_height >= 0 and input_height < height and input_width >= 0 and input_width < width:
-                        
-                        # Calculate the flat indices of the current input position (can be replaced with index_to_position, for illustration purposes)
+
+                        # Calculate the flat indices of the current input position
                         input_pos = (
                             out_batch * s10 +
                             in_channel * s11 +
@@ -330,12 +331,12 @@ def _tensor_conv2d(
                             input_width * s13
                         )
 
-                        # Calculate the flat indices of the current weight position (can be replaced with index_to_position, for illustration purposes)
+                        # Calculate the flat indices of the current weight position
                         weight_pos = (
                             out_channel * s20 +
                             in_channel * s21 +
-                            weight_height * s22 +
-                            weight_width * s23
+                            weight_height_offset * s22 +
+                            weight_width_offset * s23
                         )
 
                         # Calculate the dot product of the input and weight and add it to the result

@@ -109,13 +109,15 @@ class Network(minitorch.Module):
 
         """
         # Apply first convolutional layer and followed by ReLU activation
-        self.mid = self.conv1.forward(x).relu()
+        mid = self.conv1.forward(x).relu()
+        self.mid = mid
         
         # Apply second convolutional layer and followed by ReLU activation
-        self.out = self.conv2.forward(self.mid).relu()
+        out = self.conv2.forward(mid).relu()
+        self.out = out
         
         # Apply two-dimensional max pooling with 4x4 kernel
-        pooled_features = minitorch.nn.maxpool2d(self.out, (4, 4))
+        pooled_features = minitorch.nn.maxpool2d(out, (4, 4))
         
         # Flatten the pooled features: batch x channels x height x width -> batch_size x (channels * height * width)
         # Should be batch_size x 392
